@@ -3,6 +3,10 @@ import cv2
 import imutils
 import boxdrawing
 import colourdetection
+import dbfunction as db
+
+#press = 'press'
+#p_data = 'p_data'
 
 # grab the reference to the webcam
 vs = VideoStream(src=0).start()
@@ -21,15 +25,15 @@ while True:
 
     # box 1 – red
     center1 = colourdetection.colour_center(frame, "red")
-    boxdrawing.draw_box(frame, center1, ("left","top"), ("Pressure", "0 kPa"))
+    boxdrawing.draw_box(frame, center1, ("left","top"), ("Pressure", db.getPressure()))
 
     # box 2 – green
     center2 = colourdetection.colour_center(frame, "green")
-    boxdrawing.draw_box(frame, center2, ("right","top"), ("Temperature", "23 deg"))
+    boxdrawing.draw_box(frame, center2, ("right","top"), ("Temperature", db.getTemp()))
 
     # box 3 – blue
     center3 = colourdetection.colour_center(frame, "blue")
-    boxdrawing.draw_box(frame, center3, ("left","bottom"), ("Humidity", "million"))
+    boxdrawing.draw_box(frame, center3, ("left","bottom"), ("Humidity", db.getHum()))
 
     # show the frame
     cv2.imshow("Frame", frame)
