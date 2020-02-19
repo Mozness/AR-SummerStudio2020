@@ -8,8 +8,8 @@ import dbfunction as db
 #press = 'press'
 #p_data = 'p_data'
 
-# grab the reference to the webcam
-vs = VideoStream(src=0).start()
+# grab the reference to the webcam. src = 0: laptop webcam. src = 1: usb webcam
+vs = VideoStream(src=1).start()
 
 # keep looping
 while True:

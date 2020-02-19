@@ -1,6 +1,6 @@
 import mysql.connector
 
-#Currently returns pressure from TI sensor. Will be modular when I can be bothered to do that
+#Modular. Called in below functions to get latest number from column by id
 def getNumber(column,table):
     mydb = mysql.connector.connect(
         user='root',
@@ -18,12 +18,15 @@ def getNumber(column,table):
 
 def getPressure():
     pressure = getNumber('press','p_data') * 0.1
-    return str(pressure) + ' kPa'
+    pressure2dp = '{0:.2f}'.format(pressure)
+    return str(pressure2dp) + ' kPa'
 
 def getTemp():
     temp = getNumber('temp','t_data')
-    return str(temp) + ' C'
+    temp2dp = '{0:.2f}'.format(temp)
+    return str(temp2dp) + ' ' +'C'
 
 def getHum():
     hum = getNumber('hum','t_data')
-    return str(hum) + ' %RH'
+    hum2dp = '{0:.2f}'.format(hum)
+    return str(hum2dp) + ' %RH'
