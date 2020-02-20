@@ -12,6 +12,9 @@ import shapedetection as sd
 class VideoCamera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
+        # Sets the height and width of the video
+        self.video.set(cv2.CAP_PROP_FRAME_WIDTH, 1200)
+        self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, 675)
 
     def __del__(self):
         self.video.release()
@@ -37,6 +40,7 @@ class VideoCamera(object):
         boxdrawing.draw_box(image, center3, ("left", "bottom"), ("Humidity", db.getHum()))
 
         ret, jpeg = cv2.imencode('.jpg', image)
+
         return jpeg.tobytes()
 
 
@@ -58,7 +62,12 @@ app.layout = html.Div([
     html.H1("Webcam Test", className="header"),
     html.Div(
         children=[
-        html.Img(src="/video_feed", className="video")],
+            html.Img(src="/video_feed", className="video"),
+        ],
+        className="center_body"
+    ),
+    html.Div(
+        html.Button("Clear Database", className="button"),
         className="center_body"
     )
 ])
