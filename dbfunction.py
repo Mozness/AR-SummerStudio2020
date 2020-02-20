@@ -1,4 +1,35 @@
 import mysql.connector
+import csv
+
+# Exports a table to CSV
+def exportCSV(table):
+    mydb = mysql.connector.connect(
+        user='root',
+        password='password123',
+        host='127.0.0.1',
+        database='sensor_tag_data'
+    )
+    query = 'SELECT * FROM ' + table
+    c = mydb.cursor()
+    c.execute(query)
+    result = c.fetchall()
+    export = csv.writer(open('/Users/micha/Desktop/' + table +'dump.csv', 'w'))
+    for x in result:
+        export.writerow(x)
+    mydb.close()
+
+# Function that clears all data from a specified table.
+def clearTable(table):
+    mydb = mysql.connector.connect(
+        user='root',
+        password='password123',
+        host='127.0.0.1',
+        database='sensor_tag_data'
+    )
+    query = 'DELETE FROM ' + table
+    c = mydb.cursor()
+    c.execute(query)
+    mydb.commit()
 
 #Modular. Called in below functions to get latest number from column by id
 def getNumber(column,table):
