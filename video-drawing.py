@@ -1,54 +1,63 @@
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
 from imutils.video import VideoStream
+from flask import Flask, Response
 import cv2
-import imutils
+import colourdetection
 import boxdrawing
 import dbfunction as db
+import shapedetection as sd
 
-from shapedetection import ShapeDetector
+class VideoCamera(object):
+    def __init__(self):
+        self.video = cv2.VideoCapture(0)
 
-#press = 'press'
-#p_data = 'p_data'
+    def __del__(self):
+        self.video.release()
 
-# grab the reference to the webcam. src = 0: laptop webcam. src = 1: usb webcam
-cap = cv2.VideoCapture(0)
+    def get_frame(self):
+        success, image = self.video.read()
 
-# keep looping
-while True:
-    # grab the current frame
-    _, frame = cap.read()
+        # highilighers colours
+        blue_hsv = ((90, 100, 140), (120, 200, 255))  # blue      (190, 130, 75)      [[[106 154 190]]]
+        purple_hsv = ((128, 30, 100), (148, 120, 200))  # purple    (150, 100, 130)     [[[138  85 150]]]
+        pink_hsv = ((158, 50, 150), (178, 200, 255))  # pink      (145, 100, 215)     [[[168 136 215]]]
 
-    # if we are viewing a video and we did not grab a frame, then we have reached the end of the video
-    if frame is None:
-        break
+        # box 1 – blue
+        center1 = sd.ShapeDetector(image, blue_hsv)
+        boxdrawing.draw_box(image, center1, ("left", "top"), ("Pressure", db.getPressure()))
 
-    # resize the frame
-    frame = imutils.resize(frame, width=1200)
-    
-    # highilighers colours
-    blue_hsv = ((90, 100, 140), (120, 200, 255))     # blue      (190, 130, 75)      [[[106 154 190]]]
-    purple_hsv = ((128, 30, 100), (148, 120, 200))   # purple    (150, 100, 130)     [[[138  85 150]]]
-    pink_hsv = ((158, 50, 150), (178, 200, 255))     # pink      (145, 100, 215)     [[[168 136 215]]]
+        # box 2 – purple
+        center2 = sd.ShapeDetector(image, purple_hsv)
+        boxdrawing.draw_box(image, center2, ("right", "top"), ("Temperature", db.getTemp()))
 
-    # box 1 – blue
-    center1 = ShapeDetector(frame, blue_hsv)
-    boxdrawing.draw_box(frame, center1, ("left","top"), ("Pressure", db.getPressure()))
+        # box 3 – pink
+        center3 = sd.ShapeDetector(image, pink_hsv)
+        boxdrawing.draw_box(image, center3, ("left", "bottom"), ("Humidity", db.getHum()))
 
-    # box 2 – purple
-    center2 = ShapeDetector(frame, purple_hsv)
-    boxdrawing.draw_box(frame, center2, ("right","top"), ("Temperature", db.getTemp()))
+        ret, jpeg = cv2.imencode('.jpg', image)
+        return jpeg.tobytes()
 
-    # box 3 – pink
-    center3 = ShapeDetector(frame, pink_hsv)
-    boxdrawing.draw_box(frame, center3, ("left","bottom"), ("Humidity", db.getHum()))
 
-    # show the frame
-    cv2.imshow("Frame", frame)
-    key = cv2.waitKey(1) & 0xFF
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-    # if the 'q' key is pressed, stop the loop
-    if key == ord("q"):
-        break
+server = Flask(__name__)
+app = dash.Dash(__name__, server=server)
 
-# stop the camera video stream and close all windows
-cap.release()
-cv2.destroyAllWindows()
+@server.route('/video_feed')
+def video_feed():
+    return Response(gen(VideoCamera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+app.layout = html.Div([
+    html.H1("Webcam Test"),
+    html.Img(src="/video_feed")
+])
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
