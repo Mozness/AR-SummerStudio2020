@@ -55,8 +55,12 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 app.layout = html.Div([
-    html.H1("Webcam Test"),
-    html.Img(src="/video_feed")
+    html.H1("Webcam Test", className="header"),
+    html.Div(
+        children=[
+        html.Img(src="/video_feed", className="video")],
+        className="center_body"
+    )
 ])
 
 if __name__ == '__main__':
