@@ -18,8 +18,7 @@ def exportCSV(table):
         export.writerow(x)
     mydb.close()
 
-# Function that clears all data from a specified table.
-# THIS FUNCTION IS VERY DANGEROUS. Video will not display without data in database.
+# Function that clears all data from a specified table except the last entry
 def clearTable(table):
     mydb = mysql.connector.connect(
         user='root',
@@ -27,7 +26,7 @@ def clearTable(table):
         host='127.0.0.1',
         database='sensor_tag_data'
     )
-    query = 'DELETE FROM ' + table
+    query = 'DELETE FROM ' + table + ' WHERE id not in (SELECT id FROM (SELECT id FROM ' + table + ' ORDER BY id DESC LIMIT 1)foo)'
     c = mydb.cursor()
     c.execute(query)
     mydb.commit()

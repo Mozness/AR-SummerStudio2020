@@ -69,7 +69,7 @@ app.layout = html.Div([
     ),
     html.Div(
         children=[
-            html.Button("Export to CSV", className="button"),
+            html.Button("Export to CSV", className="button", id="button"),
             html.Button("Button 2", className="button")
         ],
         className="center_body"
