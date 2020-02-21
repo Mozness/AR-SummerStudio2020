@@ -1,6 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash.dependencies import Output, Input
 from imutils.video import VideoStream
 from flask import Flask, Response
 import cv2
@@ -67,10 +68,15 @@ app.layout = html.Div([
         className="center_body"
     ),
     html.Div(
-        html.Button("Clear Database", className="button"),
+        children=[
+            html.Button("Export to CSV", className="button"),
+            html.Button("Button 2", className="button")
+        ],
         className="center_body"
     )
 ])
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

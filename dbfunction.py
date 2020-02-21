@@ -19,6 +19,7 @@ def exportCSV(table):
     mydb.close()
 
 # Function that clears all data from a specified table.
+# THIS FUNCTION IS VERY DANGEROUS. Video will not display without data in database.
 def clearTable(table):
     mydb = mysql.connector.connect(
         user='root',
