@@ -1,14 +1,35 @@
 import mysql.connector
 import csv
+import datetime
 
-# Exports a table to CSV
-def exportCSV(table):
+# Connects to Database
+def dbconnect():
     mydb = mysql.connector.connect(
         user='root',
         password='password123',
         host='127.0.0.1',
         database='sensor_tag_data'
     )
+    return mydb
+
+# Gets dataset for Dash components
+def getdataset(table, lim, c_num=2):
+    mydb = dbconnect()
+    query = 'SELECT * FROM {} ORDER BY id DESC LIMIT {}'.format(table, lim)
+    c = mydb.cursor()
+    c.execute(query)
+    rows = c.fetchall()
+    time = []
+    data_v = []
+    for row in rows:
+        time.insert(0, datetime.datetime.strftime(row[1], '%H:%M:%S'))
+        data_v.insert(0, row[c_num])
+    return time, data_v
+    mydb.close()
+
+# Exports a table to CSV
+def exportCSV(table):
+    mydb = dbconnect()
     query = 'SELECT * FROM ' + table
     c = mydb.cursor()
     c.execute(query)
@@ -20,12 +41,7 @@ def exportCSV(table):
 
 # Function that clears all data from a specified table except the last entry
 def clearTable(table):
-    mydb = mysql.connector.connect(
-        user='root',
-        password='password123',
-        host='127.0.0.1',
-        database='sensor_tag_data'
-    )
+    mydb =dbconnect()
     query = 'DELETE FROM ' + table + ' WHERE id not in (SELECT id FROM (SELECT id FROM ' + table + ' ORDER BY id DESC LIMIT 1)foo)'
     c = mydb.cursor()
     c.execute(query)
@@ -33,12 +49,7 @@ def clearTable(table):
 
 #Modular. Called in below functions to get latest number from column by id
 def getNumber(column,table):
-    mydb = mysql.connector.connect(
-        user='root',
-        password='password123',
-        host='127.0.0.1',
-        database='sensor_tag_data'
-    )
+    mydb = dbconnect()
     query = 'SELECT ' + column + ' FROM ' + table + ' ORDER BY id DESC LIMIT 1'
     c = mydb.cursor()
     c.execute(query)
@@ -47,16 +58,25 @@ def getNumber(column,table):
         return row
     mydb.close()
 
+# Gets pressure
 def getPressure():
     pressure = getNumber('press','p_data') * 0.1
     pressure2dp = '{0:.2f}'.format(pressure)
     return str(pressure2dp) + ' kPa'
 
+# Gets Temperature (from sensor tag)
 def getTemp():
     temp = getNumber('temp','t_data')
     temp2dp = '{0:.2f}'.format(temp)
     return str(temp2dp) + ' ' +'C'
 
+# Gets Water temp
+def getWTemp():
+    temp = getNumber('w_temp','w_data')
+    temp2dp = '{0:.2f}'.format(temp)
+    return str(temp2dp) + ' ' +'C'
+
+# Gets humidity (from sensor tag)
 def getHum():
     hum = getNumber('hum','t_data')
     hum2dp = '{0:.2f}'.format(hum)

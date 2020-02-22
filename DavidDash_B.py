@@ -9,7 +9,7 @@ from flask import Flask, Response
 import cv2
 
 # Import project packages
-import getdbdata_B as db
+import dbfunction as db
 import boxdrawing
 import shapedetection as sd
 import loground_B as lt
