@@ -60,6 +60,10 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 app.layout = html.Div([
+    dcc.ConfirmDialog(
+        id='confirm',
+        message='Are you sure you want to export to CSV?',
+    ),
     html.H1("Webcam Test", className="header"),
     html.Div(
         children=[
@@ -68,15 +72,48 @@ app.layout = html.Div([
         className="center_body"
     ),
     html.Div(
-        children=[
-            html.Button("Export to CSV", className="button", id="button"),
-            html.Button("Button 2", className="button")
-        ],
+        html.H2("Export table to CSV", className="header"),
         className="center_body"
-    )
+    ),
+    html.Div(html.P("Select data to export to a CSV file for use in programs such as Excel"), className="center_body"),
+    html.Div(
+        dcc.Dropdown(
+            options=[
+                {'label': i, 'value': i}
+                for i in ['Temperature and Humidity', 'Pressure']
+            ],
+            placeholder='Select table...', id='dropdown', style={'width': '400px', 'margin': '10px'},
+        ),
+        className="center_body"
+    ),
+    html.Div(id='output-confirm', className="center_body")
 ])
 
+# Handles export to CSV function
+global table
 
+@app.callback(Output('confirm', 'displayed'),
+              [Input('dropdown', 'value')])
+def display_confirm(value):
+    global table
+    if value == 'Pressure':
+        table = 'p_data'
+        return True
+    elif value == 'Temperature and Humidity':
+        table = 't_data'
+        return True
+
+@app.callback(Output('output-confirm', 'children'),
+              [Input('confirm', 'submit_n_clicks')])
+def update_output(submit_n_clicks):
+    global table
+    if submit_n_clicks:
+        if table == 'p_data':
+            db.exportCSV(table)
+            return 'Export successful. Available on your Desktop'
+        elif table == 't_data':
+            db.exportCSV(table)
+            return 'Export successful. Available on your Desktop'
 
 if __name__ == '__main__':
     app.run_server(debug=True)
