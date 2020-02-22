@@ -1,15 +1,19 @@
+# Import Python packages
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Output, Input
-from imutils.video import VideoStream
 from flask import Flask, Response
 import cv2
-import colourdetection
-import boxdrawing
-import dbfunction as db
-import shapedetection as sd
+import plotly
 
+# Import project packages
+import dbfunction as db
+import boxdrawing
+import shapedetection as sd
+import loground_B as lt
+
+# AR code
 class VideoCamera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
@@ -34,7 +38,7 @@ class VideoCamera(object):
 
         # box 2 – purple
         center2 = sd.ShapeDetector(image, purple_hsv)
-        boxdrawing.draw_box(image, center2, ("right", "top"), ("Temperature", db.getTemp()))
+        boxdrawing.draw_box(image, center2, ("right", "top"), ("Temperature", db.getWTemp()))
 
         # box 3 – pink
         center3 = sd.ShapeDetector(image, pink_hsv)
@@ -59,23 +63,56 @@ def video_feed():
     return Response(gen(VideoCamera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+# Dash Code
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+server = Flask(__name__)
+app = dash.Dash(__name__, server=server, external_stylesheets=external_stylesheets)
+
+@server.route('/video_feed')
+def video_feed():
+    return Response(gen(VideoCamera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# Dash Layout
 app.layout = html.Div([
     dcc.ConfirmDialog(
         id='confirm',
         message='Are you sure you want to export to CSV?',
     ),
-    html.H1("Webcam Test", className="header"),
+    html.H1('David.S', className="header"),
+    html.H4('Data Acquisition & Visualisation Integrated DeSalination'),
     html.Div(
         children=[
             html.Img(src="/video_feed", className="video"),
         ],
-        className="center_body"
+        className="center_body",
+    # style=margins
     ),
+    html.H4('hello', style={'color':"white"}),
+    html.H4('Live Data Plots'),
+    # html.H6('hello', style={'color':"white"}),
+    html.H6('hello', style={'color':"white"}),
+    dcc.Slider(
+            id='my-slider',
+            min=0,
+            max=3,
+            marks={i: '{}'.format(10 ** i) for i in range(4)},
+            step=0.1,
+            value=1.8,
+            # size=1000,
+            # updatemode= 'drag',
+    ),
+    html.Div(id='slider-output-container'),
+    dcc.Graph(id='live-update-graph'),
+    dcc.Interval(
+            id='interval-component',
+            interval=1*1000, # in milliseconds
+            n_intervals=0
+        ),
     html.Div(
-        html.H2("Export table to CSV", className="header"),
-        className="center_body"
+        html.H2("Export table to CSV")
     ),
-    html.Div(html.P("Select data to export to a CSV file for use in programs such as Excel"), className="center_body"),
+    html.Div(html.P("Select data to export to a CSV file for use in programs such as Excel")),
     html.Div(
         dcc.Dropdown(
             options=[
@@ -84,10 +121,65 @@ app.layout = html.Div([
             ],
             placeholder='Select table...', id='dropdown', style={'width': '400px', 'margin': '10px'},
         ),
-        className="center_body"
     ),
-    html.Div(id='output-confirm', className="center_body")
-])
+    html.Div(id='output-confirm')
+
+], style={'margin': '100px'})
+
+# Slider update/function
+@app.callback(
+    dash.dependencies.Output('slider-output-container', 'children'),
+    [dash.dependencies.Input('my-slider', 'value')])
+def update_output(value):
+    x = lt.rlog(value)
+    return "     Viewing the last {} database inputs (slide bar to change).".format(x)
+
+
+# Graph Update/Function
+@app.callback(Output('live-update-graph', 'figure'),
+              [Input('interval-component', 'n_intervals'), Input('my-slider', 'value')])
+def update_graph_live(n, value):
+    limx = int(lt.rlog(value))
+    x_w, y_w = db.getdataset('w_data', limx)
+    x_p, y_p = db.getdataset('p_data', limx)
+    x_t, y_t = db.getdataset('t_data', limx, 3)
+
+    # Create the graph with subplots
+    fig = plotly.subplots.make_subplots(rows=3, cols=1, vertical_spacing=0.2, subplot_titles=('Water Temperature (°C)', 'Pressure (kPa)','Humidity (%RH)'))
+    fig['layout']['margin'] = {
+        'l': 50, 'r': 10, 'b': 30, 't': 50
+    }
+    # fig['layout']['legend'] = {'x': 0, 'y': 1, 'xanchor': 'left'}
+
+    fig['layout']['height'] = 700
+
+    fig.append_trace({
+        'x': x_w,
+        'y': y_w,
+        'text': '°C',
+        'name': 'Water Temperature',
+        'mode': 'lines+markers',
+        'type': 'scatter',
+        # 'yaxis': dict('title'='Water Temperature (°C)')
+    }, 1, 1)
+    fig.append_trace({
+        'x': x_p,
+        'y': y_p,
+        'text': 'kPa',
+        'name': 'Pressure',
+        'mode': 'lines+markers',
+        'type': 'scatter'
+    }, 2, 1)
+    fig.append_trace({
+        'x': x_t,
+        'y': y_t,
+        'text': '%RH',
+        'name': 'Humidity',
+        'mode': 'lines+markers',
+        'type': 'scatter'
+    }, 3, 1)
+
+    return fig
 
 # Handles export to CSV function
 global table
