@@ -9,9 +9,9 @@ import plotly
 
 # Import project packages
 import dbfunction as db
-import boxdrawing
-import shapedetection as sd
 import loground_B as lt
+from shapedetection.shapedetection import ShapeDetector
+from boxdrawing import draw_box
 
 # AR code
 class VideoCamera(object):
@@ -27,22 +27,28 @@ class VideoCamera(object):
     def get_frame(self):
         success, image = self.video.read()
 
-        # highilighers colours
-        blue_hsv = ((90, 100, 140), (120, 200, 255))  # blue      (190, 130, 75)      [[[106 154 190]]]
-        purple_hsv = ((128, 30, 100), (148, 120, 200))  # purple    (150, 100, 130)     [[[138  85 150]]]
-        pink_hsv = ((158, 50, 150), (178, 200, 255))  # pink      (145, 100, 215)     [[[168 136 215]]]
-
-        # box 1 – blue
-        center1 = sd.ShapeDetector(image, blue_hsv)
-        boxdrawing.draw_box(image, center1, ("left", "top"), ("Pressure", db.getPressure()))
+        # tape colours
+        yellow_hsv = ((16, 50, 100), (36, 200, 255))          # (26, 161, 128)       (30, 93, 225)
+        purple_hsv = ((120, 50, 50), (140, 200, 200))         # (132, 140, 95)       (131, 91, 174)
+        blue_hsv = ((100, 50, 100), (130, 200, 255))          # (111, 149, 115)      (112, 113, 196,
+        green_hsv = ((80, 30, 100), (100, 150, 255))          # (92, 87, 144)        (88, 78, 232)
+        
+        
+        # box 1 – yellow
+        center1 = ShapeDetector(image, yellow_hsv)
+        draw_box(image, center1, 1, ("Pressure", db.getPressure()))
 
         # box 2 – purple
-        center2 = sd.ShapeDetector(image, purple_hsv)
-        boxdrawing.draw_box(image, center2, ("right", "top"), ("Temperature", db.getWTemp()))
+        center2 = ShapeDetector(image, purple_hsv)
+        draw_box(image, center2, 2, ("Temperature", db.getWTemp()))
 
-        # box 3 – pink
-        center3 = sd.ShapeDetector(image, pink_hsv)
-        boxdrawing.draw_box(image, center3, ("left", "bottom"), ("Humidity", db.getHum()))
+        # box 3 – blue
+        center3 = ShapeDetector(image, blue_hsv)
+        draw_box(image, center3, 3, ("Humidity", db.getHum()))
+
+        # box 4 – green
+        center4 = ShapeDetector(image, green_hsv)
+        draw_box(image, center4, 4, ("Bla", "bla"))
 
         ret, jpeg = cv2.imencode('.jpg', image)
 
