@@ -89,65 +89,61 @@ def draw_outlier(src, outlier):
     p2 = (p1[0] + outlier["width"], p1[1] + outlier["height"])
     rounded_rectangle(src, p1, p2, outlier["color"], outlier["thickness"], outlier["lineType"], outlier["corners"])
 
-
+    
 # calculates indent between center and box; box top-left point; and the point where line connects to the box
-def calculate_points(src, box, m_corners, center, corner):
+def calculate_points(src, box, m_corners, center):
     h, w = src.shape[0:2]
+    
+    if box["width"] + 10 < center[0] < w / 2:
+        corner = ("left", None)
+    elif w/2 <= center[0] < w - box["width"] - 10:
+        corner = ("right", None)
 
-    if corner[0] == "left" and corner[1] == "top":
-        indent = ((center[0] - box["width"]) * (1 / 3), (center[1] - box["height"]) * (2 / 3))
-        point = (int(center[0] - box["width"] - indent[0]), int(center[1] - box["height"] - indent[1]))
-        line_point = (int(point[0] + box["width"] - (m_corners[3] - m_corners[3] / math.sqrt(2))),
-                      int(point[1] + box["height"] - (m_corners[3] - m_corners[3] / math.sqrt(2))))
-
-    if corner[0] == "right" and corner[1] == "top":
-        indent = ((w - center[0] - box["width"]) * (1 / 3), (center[1] - box["height"]) * (2 / 3))
-        point = (int(center[0] + indent[0]), int(center[1] - box["height"] - indent[1]))
-        line_point = (int(point[0] + (m_corners[3] - m_corners[3] / math.sqrt(2))),
-                      int(point[1] + box["height"] - (m_corners[3] - m_corners[3] / math.sqrt(2))))
-
-    if corner[0] == "left" and corner[1] == "bottom":
-        indent = ((center[0] - box["width"]) * (1 / 3), (h - center[1] - box["height"]) * (2 / 3))
-        point = (int(center[0] - box["width"] - indent[0]), int(center[1] + indent[1]))
-        line_point = (int(point[0] + box["width"] - (m_corners[3] - m_corners[3] / math.sqrt(2))),
-                      int(point[1] + (m_corners[3] - m_corners[3] / math.sqrt(2))))
-
-    if corner[0] == "right" and corner[1] == "bottom":
-        indent = ((w - center[0] - box["width"]) * (1 / 3), (h - center[1] - box["height"]) * (2 / 3))
-        point = (int(center[0] + indent[0]), int(center[1] + indent[1]))
-        line_point = (int(point[0] + (m_corners[3] - m_corners[3] / math.sqrt(2))),
-                      int(point[1] + (m_corners[3] - m_corners[3] / math.sqrt(2))))
-
-    if point[0] + box["width"] > w - 10 and corner[0] != "left":
-        corner = ("left", corner[1])
-        point, line_point = calculate_points(src, box, m_corners, center, corner)
-
-    if point[0] < 10 and corner[0] != "right":
-        corner = ("right", corner[1])
-        point, line_point = calculate_points(src, box, m_corners, center, corner)
-
-    if point[1] + box["height"] > h - 10 and corner[1] != "top":
+    if box["height"] + 10 < center[1] < h/2:
         corner = (corner[0], "top")
-        point, line_point = calculate_points(src, box, m_corners, center, corner)
-
-    if point[1] < 10 and corner[1] != "bottom":
+    elif h/2 <= center[1] < h - box["height"] - 10:
         corner = (corner[0], "bottom")
-        point, line_point = calculate_points(src, box, m_corners, center, corner)
+
+    if corner[0] == "left":
+        indent = ((center[0] - box["width"]) * (1 / 3), None)
+        point = (int(center[0] - box["width"] - indent[0]), None)
+        line_point = (int(point[0] + box["width"] - (m_corners[3] - m_corners[3] / math.sqrt(2))), None)
+    elif corner[0] == "right":
+        indent = ((w - center[0] - box["width"]) * (1 / 3), None)
+        point = (int(center[0] + indent[0]), None)
+        line_point = (int(point[0] + (m_corners[3] - m_corners[3] / math.sqrt(2))), None)
+    else:
+        indent = (box["width"] / 2, None)
+        point = (int(center[0] - indent[0]), None)
+        line_point = (center[0], None)
+
+    if corner[1] == "top":
+        indent = (indent[0], (center[1] - box["height"]) * (2 / 3))
+        point = (point[0], int(center[1] - box["height"] - indent[1]))
+        line_point = (line_point[0], int(point[1] + box["height"] - (m_corners[3] - m_corners[3] / math.sqrt(2))))
+    elif corner[1] == "bottom":
+        indent = (indent[0], (h - center[1] - box["height"]) * (2 / 3))
+        point = (point[0], int(center[1] + indent[1]))
+        line_point = (line_point[0], int(point[1] + (m_corners[3] - m_corners[3] / math.sqrt(2))))
+    else:
+        indent = (indent[0], box["height"] / 2)
+        point = (point[0], int(center[1] - indent[1]))
+        line_point = (line_point[0], center[1])
 
     return point, line_point
 
 
 # draws whole box with main section, header, text, outlier and line connecting box to detected center point
-def draw_box(src, center, corner, text):
+def draw_box(src, center, n, text):
     # box details
-    box = {"width": 200, "height": 170, "corner": 30, "indent": (1 / 3)}
+    box = {"width": 210, "height": 140, "corner": 30, "indent": (1 / 3)}
     h_corners = (box["corner"], box["corner"], 0, 0)  # header corners
     m_corners = (0, 0, box["corner"], box["corner"])  # main corners
     o_corners = (box["corner"], box["corner"], box["corner"], box["corner"])  # outlier corners
 
     # if required point is detected draw box and line
     if center is not None:
-        point, line_point = calculate_points(src, box, m_corners, center, corner)
+        point, line_point = calculate_points(src, box, m_corners, center)
 
         # draw transparent circle around detected point
         output = src.copy()
@@ -161,12 +157,7 @@ def draw_box(src, center, corner, text):
     # else draw box on the left side of the video
     else:
         position = {"xPos": 30, "yPos": 30, "space": 20}
-        if corner[0] == "left" and corner[1] == "top":
-            point = (position["xPos"], position["yPos"])
-        if corner[0] == "right" and corner[1] == "top":
-            point = (position["xPos"], position["yPos"] + position["space"] + box["height"])
-        elif corner[0] == "left" and corner[1] == "bottom":
-            point = (position["xPos"], position["yPos"] + position["space"] * 2 + box["height"] * 2)
+        point = (position["xPos"], position["yPos"] + position["space"] * (n - 1) + box["height"] * (n - 1))
 
     # more box details
     box["p1"] = point
