@@ -94,10 +94,12 @@ def draw_outlier(src, outlier):
 def calculate_points(src, box, m_corners, center):
     h, w = src.shape[0:2]
     
+    corner = ("middle", "middle")
+    
     if box["width"] + 10 < center[0] < w / 2:
-        corner = ("left", None)
+        corner = ("left", corner[1])
     elif w/2 <= center[0] < w - box["width"] - 10:
-        corner = ("right", None)
+        corner = ("right", corner[1])
 
     if box["height"] + 10 < center[1] < h/2:
         corner = (corner[0], "top")
