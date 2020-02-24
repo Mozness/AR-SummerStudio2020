@@ -10,7 +10,7 @@ import plotly
 # Import project packages
 import dbfunction as db
 import loground_B as lt
-from shapedetection.shapedetection import ShapeDetector
+from shapedetection import ShapeDetector
 from boxdrawing import draw_box
 
 # AR code
@@ -28,12 +28,11 @@ class VideoCamera(object):
         success, image = self.video.read()
 
         # tape colours
-        yellow_hsv = ((16, 50, 100), (36, 200, 255))          # (26, 161, 128)       (30, 93, 225)
-        purple_hsv = ((120, 50, 50), (140, 200, 200))         # (132, 140, 95)       (131, 91, 174)
-        blue_hsv = ((100, 50, 100), (130, 200, 255))          # (111, 149, 115)      (112, 113, 196,
-        green_hsv = ((80, 30, 100), (100, 150, 255))          # (92, 87, 144)        (88, 78, 232)
-        
-        
+        yellow_hsv = ((20, 50, 50), (40, 200, 255))  # (26, 161, 128)       (30, 93, 225)
+        purple_hsv = ((120, 50, 50), (140, 200, 200))  # (132, 140, 95)      (131, 91, 174)
+        blue_hsv = ((100, 100, 100), (120, 200, 200))  # (111, 149, 115)      (112, 113, 196,
+        green_hsv = ((80, 50, 100), (100, 150, 255))  # (92, 87, 144)        (88, 78, 232)
+
         # box 1 – yellow
         center1 = ShapeDetector(image, yellow_hsv)
         draw_box(image, center1, 1, ("Pressure", db.getPressure()))
@@ -48,7 +47,7 @@ class VideoCamera(object):
 
         # box 4 – green
         center4 = ShapeDetector(image, green_hsv)
-        draw_box(image, center4, 4, ("Bla", "bla"))
+        draw_box(image, center4, 4, ("W Temp", db.getWTemp()))
 
         ret, jpeg = cv2.imencode('.jpg', image)
 
