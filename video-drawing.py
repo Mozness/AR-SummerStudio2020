@@ -10,7 +10,7 @@ import plotly
 # Import project packages
 import dbfunction as db
 import loground_B as lt
-from shapedetection.shapedetection import ShapeDetector
+from shapedetection import ShapeDetector
 from boxdrawing import draw_box
 
 # AR code

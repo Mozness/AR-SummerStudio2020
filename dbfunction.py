@@ -1,10 +1,10 @@
-import mysql.connector
+import MySQLdb
 import csv
 import datetime
 
 # Connects to Database. Change the name of the user and database to your db
 def dbconnect():
-    mydb = mysql.connector.connect(
+    mydb = MySQLdb.connect(
         user='root',
         password='password123',
         host='127.0.0.1',
