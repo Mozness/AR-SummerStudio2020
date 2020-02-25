@@ -12,6 +12,8 @@ import dbfunction as db
 import loground_B as lt
 from shapedetection import ShapeDetector
 from boxdrawing import draw_box
+from boxdrawing import draw_rectangle
+
 
 # AR code
 class VideoCamera(object):
@@ -48,6 +50,12 @@ class VideoCamera(object):
         # box 4 – green
         center4 = ShapeDetector(image, green_hsv)
         draw_box(image, center4, 4, ("W Temp", db.getWTemp()))
+        
+        if True:
+            rec = {"p1": (1000, 650), "width": 250, "height": 50, "corners": (10,10,10,10), "color": (170,170,170),
+                   "thickness": -1, "lineType": 0, "alpha": 0.5}
+            text = {"text": "Water is boiling", "font": cv2.FONT_HERSHEY_DUPLEX, "scale": 1, "thickness": 1, "color": (255, 255, 255)}
+            draw_rectangle(image, rec, text)
 
         ret, jpeg = cv2.imencode('.jpg', image)
 
