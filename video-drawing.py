@@ -28,13 +28,13 @@ class VideoCamera(object):
         success, image = self.video.read()
 
         # tape colours
-        pink_hsv = ((130, 0, 150), (155, 100, 255))  # (145, 47, 183)         (141, 50, 194)
         purple_hsv = ((120, 50, 50), (140, 200, 200))  # (132, 140, 95)      (131, 91, 174)
         blue_hsv = ((100, 100, 100), (120, 200, 200))  # (111, 149, 115)      (112, 113, 196,
         green_hsv = ((80, 50, 100), (100, 150, 255))  # (92, 87, 144)        (88, 78, 232)
+        red_hsv = ((0, 100, 100), (15, 255, 255))  # (4, 160, 174)
 
-        # box 1 – pink
-        center1 = ShapeDetector(image, pink_hsv)
+        # box 1 – red
+        center1 = ShapeDetector(image, red_hsv)
         draw_box(image, center1, 1, ("Pressure", db.getPressure()))
 
         # box 2 – purple
