@@ -12,16 +12,14 @@ import dbfunction as db
 import loground_B as lt
 from shapedetection import ShapeDetector
 from boxdrawing import draw_box
-from boxdrawing import draw_rectangle
 
 # AR code
 class VideoCamera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
         # Sets the height and width of the video
-
-        # self.video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        # self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, 960)
+        self.video.set(cv2.CAP_PROP_FRAME_WIDTH, 1200)
+        self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, 675)
 
     def __del__(self):
         self.video.release()
@@ -29,26 +27,19 @@ class VideoCamera(object):
     def get_frame(self):
         success, image = self.video.read()
 
-        # h, w = image.shape[0:2]
-        # print(h)
-        # print(w)
-
-        # image.set(cv2.CAP_PROP_FRAME_WIDTH, 1200)
-
         # tape colours
-        pink_hsv = ((130, 0, 150), (155, 100, 255))  # (145, 47, 183)         (141, 50, 194)
-        purple_hsv = ((115, 60, 60), (140, 200, 200)) # Original>((120, 50, 50), (140, 200, 200))  # (132, 140, 95)      (131, 91, 174)
+        yellow_hsv = ((20, 50, 50), (40, 200, 255))  # (26, 161, 128)       (30, 93, 225)
+        purple_hsv = ((120, 50, 50), (140, 200, 200))  # (132, 140, 95)      (131, 91, 174)
         blue_hsv = ((100, 100, 100), (120, 200, 200))  # (111, 149, 115)      (112, 113, 196,
         green_hsv = ((80, 50, 100), (100, 150, 255))  # (92, 87, 144)        (88, 78, 232)
-        red_hsv = ((0, 100, 100), (15, 255, 255))  # (4, 160, 174)
 
-        # box 1 – red
-        center1 = ShapeDetector(image, red_hsv)
+        # box 1 – yellow
+        center1 = ShapeDetector(image, yellow_hsv)
         draw_box(image, center1, 1, ("Pressure", db.getPressure()))
 
         # box 2 – purple
         center2 = ShapeDetector(image, purple_hsv)
-        draw_box(image, center2, 2, ("Temperature", db.getTemp()))
+        draw_box(image, center2, 2, ("Temperature", db.getWTemp()))
 
         # box 3 – blue
         center3 = ShapeDetector(image, blue_hsv)
@@ -56,20 +47,7 @@ class VideoCamera(object):
 
         # box 4 – green
         center4 = ShapeDetector(image, green_hsv)
-        draw_box(image, center4, 4, ("Water Temp", db.getWTemp()))
-        # n = str.getNumber("boil", "boil_status"))
-        # print(n)(db
-        rec = {"p1": (450, 430), "width": 165, "height": 30, "corners": (10, 10, 10, 10), "color": (170, 170, 170),
-                "thickness": -1, "lineType": 0, "alpha": 0.5}
-        text = {"text": db.getBoil(), "font": cv2.FONT_HERSHEY_DUPLEX, "scale": 0.5, "thickness": 1,
-                "color": (255, 255, 255)}
-        draw_rectangle(image, rec, text)
-
-        rec2 = {"p1": (20, 430), "width": 150, "height": 30, "corners": (10, 10, 10, 10), "color": (170, 170, 170),
-               "thickness": -1, "lineType": 0, "alpha": 0.5}
-        text2 = {"text": db.getLevel(), "font": cv2.FONT_HERSHEY_DUPLEX, "scale": 0.5, "thickness": 1,
-                "color": (255, 255, 255)}
-        draw_rectangle(image, rec2, text2)
+        draw_box(image, center4, 4, ("W Temp", db.getWTemp()))
 
         ret, jpeg = cv2.imencode('.jpg', image)
 
@@ -144,7 +122,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             options=[
                 {'label': i, 'value': i}
-                for i in ['Temperature and Humidity', 'Pressure', 'Water Temperature']
+                for i in ['Temperature and Humidity', 'Pressure']
             ],
             placeholder='Select table...', id='dropdown', style={'width': '400px', 'margin': '10px'},
         ),
@@ -221,9 +199,6 @@ def display_confirm(value):
     elif value == 'Temperature and Humidity':
         table = 't_data'
         return True
-    elif value == 'Water Temperature':
-        table = 'w_data'
-        return True
 
 @app.callback(Output('output-confirm', 'children'),
               [Input('confirm', 'submit_n_clicks')])
@@ -234,9 +209,6 @@ def update_output(submit_n_clicks):
             db.exportCSV(table)
             return 'Export successful. Available on your Desktop'
         elif table == 't_data':
-            db.exportCSV(table)
-            return 'Export successful. Available on your Desktop'
-        elif table == 'w_data':
             db.exportCSV(table)
             return 'Export successful. Available on your Desktop'
 
