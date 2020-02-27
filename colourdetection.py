@@ -19,7 +19,7 @@ def colour_center(src, colour):
         colour_hsv = ((110, 100, 100), (130, 255, 255))  # dark blue
 
     if colour == "red":
-        colour_hsv = ((0, 140, 100), (20, 200, 200))  # bright red (40,50,155) [[[  3 189 155]]]
+        colour_hsv = ((5, 124, 99), (160, 65, 51))  # original red> ((0, 140, 100), (20, 200, 200))  # bright red (40,50,155) [[[  3 189 155]]]
         # colour_hsv = ((165, 50, 50), (195, 255, 255)) # burgundy red
         # colour_hsv = ((165, 100, 40), (185, 200, 140)) # another burgundy red
     # brown = ((0, 140, 100), (30, 200, 160))

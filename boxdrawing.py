@@ -107,11 +107,11 @@ def calculate_points(src, box, m_corners, center):
         corner = (corner[0], "bottom")
 
     if corner[0] == "left":
-        indent = ((center[0] - box["width"]) * (1 / 3), None)
+        indent = ((center[0] - box["width"]) * (1 / 4), None)
         point = (int(center[0] - box["width"] - indent[0]), None)
         line_point = (int(point[0] + box["width"] - (m_corners[3] - m_corners[3] / math.sqrt(2))), None)
     elif corner[0] == "right":
-        indent = ((w - center[0] - box["width"]) * (1 / 3), None)
+        indent = ((w - center[0] - box["width"]) * (1 / 4), None)
         point = (int(center[0] + indent[0]), None)
         line_point = (int(point[0] + (m_corners[3] - m_corners[3] / math.sqrt(2))), None)
     else:
@@ -120,11 +120,11 @@ def calculate_points(src, box, m_corners, center):
         line_point = (center[0], None)
 
     if corner[1] == "top":
-        indent = (indent[0], (center[1] - box["height"]) * (2 / 3))
+        indent = (indent[0], (center[1] - box["height"]) * (1 / 3))
         point = (point[0], int(center[1] - box["height"] - indent[1]))
         line_point = (line_point[0], int(point[1] + box["height"] - (m_corners[3] - m_corners[3] / math.sqrt(2))))
     elif corner[1] == "bottom":
-        indent = (indent[0], (h - center[1] - box["height"]) * (2 / 3))
+        indent = (indent[0], (h - center[1] - box["height"]) * (1 / 3))
         point = (point[0], int(center[1] + indent[1]))
         line_point = (line_point[0], int(point[1] + (m_corners[3] - m_corners[3] / math.sqrt(2))))
     else:
@@ -138,7 +138,7 @@ def calculate_points(src, box, m_corners, center):
 # draws whole box with main section, header, text, outlier and line connecting box to detected center point
 def draw_box(src, center, n, text):
     # box details
-    box = {"width": 210, "height": 140, "corner": 30, "indent": (1 / 3)}
+    box = {"width": 150, "height": 100, "corner": 15, "indent": (1 / 3)}
     h_corners = (box["corner"], box["corner"], 0, 0)  # header corners
     m_corners = (0, 0, box["corner"], box["corner"])  # main corners
     o_corners = (box["corner"], box["corner"], box["corner"], box["corner"])  # outlier corners
@@ -158,7 +158,7 @@ def draw_box(src, center, n, text):
 
     # else draw box on the left side of the video
     else:
-        position = {"xPos": 30, "yPos": 30, "space": 20}
+        position = {"xPos": 15, "yPos": 15, "space": 10}
         point = (position["xPos"], position["yPos"] + position["space"] * (n - 1) + box["height"] * (n - 1))
 
     # more box details
@@ -170,9 +170,9 @@ def draw_box(src, center, n, text):
     header_rec = {"p1": box["p1"], "width": box["width"], "height": header_height, "corners": h_corners,
                   "color": (255, 255, 255), "thickness": -1, "lineType": 0, "alpha": 1}
     main_rec = {"p1": main_p1, "width": box["width"], "height": main_height, "corners": m_corners,
-                "color": (156, 98, 37), "thickness": -1, "lineType": 0, "alpha": 0.8}
-    header_text = {"text": text[0], "font": cv2.FONT_HERSHEY_DUPLEX, "scale": 1, "thickness": 1, "color": (0, 0, 0)}
-    main_text = {"text": text[1], "font": cv2.FONT_HERSHEY_DUPLEX, "scale": 1, "thickness": 1, "color": (0, 0, 0)}
+                "color": (112, 109, 144), "thickness": -1, "lineType": 0, "alpha": 0.8}
+    header_text = {"text": text[0], "font": cv2.FONT_HERSHEY_DUPLEX, "scale": 0.6, "thickness": 1, "color": (0, 0, 0)}
+    main_text = {"text": text[1], "font": cv2.FONT_HERSHEY_DUPLEX, "scale": 0.6, "thickness": 1, "color": (0, 0, 0)}
     outlier = {"p1": box["p1"], "width": box["width"], "height": box["height"], "corners": o_corners,
                "color": (0, 0, 0), "thickness": 2, "lineType": 0}
 

@@ -81,3 +81,20 @@ def getHum():
     hum = getNumber('hum','t_data')
     hum2dp = '{0:.2f}'.format(hum)
     return str(hum2dp) + ' %RH'
+
+# Gets boolean boil status
+def getBoil():
+    boil = getNumber('boil', 'boil_status')
+    if boil == 1:
+        return "Water is boiling"
+    else:
+        return "Water is not boiling"
+
+# Gets boolean water status
+def getLevel():
+    #lvl = getNumber('boil', 'water_low')
+    lvl = 1
+    if lvl == '1':
+        return "Water is low"
+    else:
+        return "Enough water"

@@ -1,0 +1,1 @@
+[{"id":"7211ddb8.c1fac4","type":"mysql","z":"5f9e0ab3.592f94","mydb":"7d67798e.1a8398","name":"","x":754,"y":178,"wires":[["655b380b.db5078"]]},{"id":"7d67798e.1a8398","type":"MySQLdatabase","z":"","host":"172.19.204.21","port":"3306","db":"sensor_tag_data","tz":""}]
