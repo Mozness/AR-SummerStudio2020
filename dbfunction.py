@@ -2,6 +2,7 @@ import MySQLdb
 import csv
 import datetime
 
+
 # Connects to Database. Change the name of the user and database to your db
 def dbconnect():
     mydb = MySQLdb.connect(
