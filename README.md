@@ -6,7 +6,7 @@ Any unused classes are kept for the purpose of documentation.</br>
 node-red_final.json is a node-red flow used for updating the sensors on the Raspberry Pis. Run it in node red.</br>
 You'll need to set up your own MySQL database as well and modify the node-red flow and code where appropriate.</br>
 </br>
-# Recommended Set up
+## Recommended Set up ##
 </br>
 - Pycharm IDE (very highly recommended)</br>
 - Raspberry Pi with bluetooth connection (3 and above)</br>
@@ -17,7 +17,7 @@ You'll need to set up your own MySQL database as well and modify the node-red fl
 - Second webcam for motion sensor highly recommended. Another from primary AR feed also ighly recommended but not needed to run program.</br>
 - Make sure all packages in PyCharm are installed.</br>
 </br>
-# To run
+## To run ##
 </br>
 - Set up Raspberry Pi with sensors.</br>
 - Change Node Red flow to connect to your database and update your tables.</br>
