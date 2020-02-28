@@ -1,4 +1,4 @@
-# AR-SummerStudio2020
+# MOTION DETECTION FOR AUGMENTED REALITY (2020)
 </br>
 Motion sensing code must be run separately from main code. </br>
 This AR program was built in Pycharm. Run the video-drawing class to run the program. </br>
@@ -39,9 +39,10 @@ NOTE: There will be a 5-7sec delay in video feed due to processing power of the 
   - Image: Motion Detection stream with blue boxes recognising movement</br>
   - Frame_Delta: Difference in the two frames (Taken a specified time apart. Default 0.25s)</br>
   - Threshold: Difference in two frames converted to pixels. One the pixel area is large enough, it will trigger detection</br>
+- Once motion Detection is detected for a certain period of time (A counter is used within the code), it will state motion detected.
   </br>
   
-  Notes:
+  ## Notes
   
   </br>
   
