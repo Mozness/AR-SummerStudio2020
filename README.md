@@ -14,7 +14,7 @@ You'll need to set up your own MySQL database as well and modify the node-red fl
 - Raspberry Pi with bluetooth connection (3 and above)</br>
 - Texas Instruments CC2650 Sensor Tag</br>
 - DS18B20 waterproof temperature sensor</br>
-- Windows PC with My SQL C libraries installed. Best installed with whole MySQL package (especially if you chose to use a local database). This is because a C based connector is used in the program that privides better performance in the connection with the database than the Python connector.</br>
+- Windows PC with My SQL C libraries installed. Best installed with whole MySQL package (especially if you chose to use a local database). This is because a C based connector is used in the program that provides better performance in the connection with the database than the Python connector.</br>
 - MySQL database. Currently the program is configured to a local database. Node Red flow will need to be updated with new Ip and name of your database.</br>
 - Second webcam for motion sensor highly recommended. Another from primary AR feed also ighly recommended but not needed to run program.</br>
 - Make sure all packages in PyCharm are installed.</br>
