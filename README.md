@@ -26,5 +26,6 @@ You'll need to set up your own MySQL database as well and modify the node-red fl
 - Set up Raspberry Pi with sensors.</br>
 - Change Node Red flow to connect to your database and update your tables.</br>
 - Start MySQL server and run Pis. Data should update if set up correctly.</br>
+- Update dbconnect function in dbfunction file to reflect your MySQL database IP, user and name. </br>
 - Run video-drawing.py on Pycharm to launch program.</br>
 - Run motion sensing program.
