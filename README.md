@@ -28,4 +28,4 @@ You'll need to set up your own MySQL database as well and modify the node-red fl
 - Start MySQL server and run Pis. Data should update if set up correctly.</br>
 - Update dbconnect function in dbfunction file to reflect your MySQL database IP, user and name. </br>
 - Run video-drawing.py on Pycharm to launch program.</br>
-- Run motion sensing program.
+- Run motion sensing program (instructions in the README in the folder containing motion sensing code).
